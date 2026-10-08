@@ -26,12 +26,12 @@
             galleryImage.setAttribute('src', categories[currentCategory][currentIndex]);
 
             // On remet tous les textes en blanc
-            document.querySelector('#btn-entrees').setAttribute('color', 'white');
-            document.querySelector('#btn-plats').setAttribute('color', 'white');
-            document.querySelector('#btn-desserts').setAttribute('color', 'white');
+            document.querySelector('#btn-entrees').setAttribute('color', '#F6FDFF');
+            document.querySelector('#btn-plats').setAttribute('color', '#F6FDFF');
+            document.querySelector('#btn-desserts').setAttribute('color', '#F6FDFF');
 
             // On met en jaune la catégorie actuellement sélectionnée
-            document.querySelector('#btn-' + catName).setAttribute('color', 'yellow');
+            document.querySelector('#btn-' + catName).setAttribute('color', '#81B29A');
             console.log("Catégorie changée : " + catName);
         };
 
