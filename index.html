@@ -5,70 +5,75 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1. BASE DE DONNÉES DES IMAGES PAR CATÉGORIE
-            // Remplace ces noms par tes vrais fichiers images
-            const categories = {
-                entrees: ['#entree1', '#entree2'],
-                plats:   ['#plat1', '#plat2', '#plat3'],
-                desserts:['#dessert1', '#dessert2']
-            };
+        // 1. BASE DE DONNÉES DES IMAGES PAR CATÉGORIE
+        const categories = {
+            entrees: ['#entree1', '#entree2'],
+            plats:   ['#plat1', '#plat2', '#plat3'],
+            desserts:['#dessert1', '#dessert2']
+        };
 
-            // On démarre par défaut sur la catégorie "plats"
-            let currentCategory = 'plats';
-            let photos = categories[currentCategory]; 
-            let currentIndex = 0; 
+        // Variables pour retenir où on en est
+        let currentCategory = 'plats';
+        let currentIndex = 0; 
+
+        // 2. FONCTION GLOBALE POUR CHANGER DE CATÉGORIE
+        window.updateCategory = function(catName) {
+            currentCategory = catName;
+            currentIndex = 0; // On revient à la première photo de la catégorie
             
+            // On change l'image
             const galleryImage = document.querySelector('#gallery-image');
-            
-            // Les boutons textes
-            const btnEntree = document.querySelector('#btn-entree');
-            const btnPlat = document.querySelector('#btn-plat');
-            const btnDessert = document.querySelector('#btn-dessert');
+            galleryImage.setAttribute('src', categories[currentCategory][currentIndex]);
 
-            // 2. FONCTION POUR CHANGER DE CATÉGORIE
-            function updateCategory(catName) {
-                currentCategory = catName;
-                photos = categories[currentCategory]; // On charge les nouvelles photos
-                currentIndex = 0; // On revient à la première photo de la catégorie
-                galleryImage.setAttribute('src', photos[currentIndex]);
+            // On remet tous les textes en blanc
+            document.querySelector('#btn-entrees').setAttribute('color', 'white');
+            document.querySelector('#btn-plats').setAttribute('color', 'white');
+            document.querySelector('#btn-desserts').setAttribute('color', 'white');
 
-                // On remet tous les textes en blanc
-                btnEntree.setAttribute('color', 'white');
-                btnPlat.setAttribute('color', 'white');
-                btnDessert.setAttribute('color', 'white');
+            // On met en jaune la catégorie actuellement sélectionnée
+            document.querySelector('#btn-' + catName).setAttribute('color', 'yellow');
+            console.log("Catégorie changée : " + catName);
+        };
 
-                // On met en jaune la catégorie actuellement sélectionnée
-                if (catName === 'entrees') btnEntree.setAttribute('color', 'yellow');
-                if (catName === 'plats') btnPlat.setAttribute('color', 'yellow');
-                if (catName === 'desserts') btnDessert.setAttribute('color', 'yellow');
+        // 3. COMPOSANT A-FRAME POUR LES CLICS (La méthode la plus fiable en 3D)
+        // Ceci dit au moteur 3D : "Dès qu'un élément a cet attribut, rends-le cliquable"
+        AFRAME.registerComponent('categorie-cliquable', {
+            schema: { type: 'string' },
+            init: function () {
+                // 'mousedown' est ultra réactif sur téléphone (dès qu'on pose le doigt)
+                this.el.addEventListener('mousedown', () => {
+                    window.updateCategory(this.data);
+                });
+                // 'click' classique au cas où
+                this.el.addEventListener('click', () => {
+                    window.updateCategory(this.data);
+                });
             }
+        });
 
-            // Écouteurs de clics sur les textes
-            btnEntree.addEventListener('click', () => updateCategory('entrees'));
-            btnPlat.addEventListener('click', () => updateCategory('plats'));
-            btnDessert.addEventListener('click', () => updateCategory('desserts'));
-
-            // 3. LOGIQUE DU SWIPE (Glissement de doigt)
+        // 4. LOGIQUE DU SWIPE (Glissement de doigt)
+        document.addEventListener("DOMContentLoaded", function() {
             let touchstartX = 0;
             let touchendX = 0;
 
             function handleSwipe() {
                 const swipeThreshold = 50; 
                 const diff = touchendX - touchstartX;
+                const photos = categories[currentCategory]; // On récupère les photos de la catégorie actuelle
 
                 if (diff < -swipeThreshold) {
                     // Swipe gauche
                     currentIndex = (currentIndex + 1) % photos.length; 
-                    galleryImage.setAttribute('src', photos[currentIndex]);
+                    document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
                 } 
                 else if (diff > swipeThreshold) {
                     // Swipe droite
                     currentIndex = (currentIndex - 1 + photos.length) % photos.length; 
-                    galleryImage.setAttribute('src', photos[currentIndex]);
+                    document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
                 }
             }
 
+            // Écouteurs pour le glissement
             window.addEventListener('touchstart', e => {
                 touchstartX = e.changedTouches[0].screenX;
             });
@@ -105,24 +110,22 @@
         <a-entity mindar-image-target="targetIndex: 0" id="affiche">
             
             <!-- LES TEXTES (MENUS) -->
-            <!-- L'attribut 'geometry' crée un fond transparent pour rendre la zone cliquable plus grande avec le doigt -->
-            <a-text id="btn-entree" class="clickable" value="ENTREES" align="center" position="0 0.9 0" scale="0.6 0.6 0.6" color="white" 
-                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.0; transparent: true"></a-text>
+            <!-- J'ai ajouté le composant 'categorie-cliquable' et changé l'opacité à 0.01 pour que le clic soit bien détecté -->
+            <a-text id="btn-entrees" class="clickable" categorie-cliquable="entrees" value="ENTREES" align="center" position="0 0.9 0" scale="0.6 0.6 0.6" color="white" 
+                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
             
-            <a-text id="btn-plat" class="clickable" value="PLATS" align="center" position="0 0.7 0" scale="0.6 0.6 0.6" color="yellow" 
-                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.0; transparent: true"></a-text>
+            <a-text id="btn-plats" class="clickable" categorie-cliquable="plats" value="PLATS" align="center" position="0 0.7 0" scale="0.6 0.6 0.6" color="yellow" 
+                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
             
-            <a-text id="btn-dessert" class="clickable" value="DESSERTS" align="center" position="0 0.5 0" scale="0.6 0.6 0.6" color="white" 
-                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.0; transparent: true"></a-text>
+            <a-text id="btn-desserts" class="clickable" categorie-cliquable="desserts" value="DESSERTS" align="center" position="0 0.5 0" scale="0.6 0.6 0.6" color="white" 
+                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
 
             <!-- L'IMAGE PRINCIPALE -->
-            <!-- Positionnée plus bas (Y = -0.3) et plus petite (scale = 0.8) -->
             <a-plane id="gallery-image" src="#plat1" position="0 -0.3 0" width="1" height="1" scale="0.8 0.8 0.8" rotation="0 0 0"></a-plane>
             
         </a-entity>
 
         <!-- LA CAMÉRA (INDISPENSABLE POUR LES CLICS) -->
-        <!-- On a remis le "raycaster" pour qu'A-Frame détecte quand ton doigt touche les éléments avec la classe "clickable" -->
         <a-camera cursor="fuse: false; rayOrigin: mouse;" raycaster="objects: .clickable" position="0 0 0" look-controls="enabled: false"></a-camera>
     </a-scene>
 </body>
