@@ -18,15 +18,17 @@
         // FONCTION POUR METTRE À JOUR LES POINTS
         function updateDots() {
             const numDots = categories[currentCategory].length;
-            const spacing = 0.15; 
-            const startX = -(numDots - 1) * spacing / 2; 
+            const spacing = 0.15; // Espace entre chaque point
+            const startX = -(numDots - 1) * spacing / 2; // Calcul pour centrer les points
 
+            // On boucle jusqu'à 5 (limite max de points pré-créés en HTML)
             for (let i = 0; i < 5; i++) {
                 const dot = document.querySelector('#dot-' + i);
                 if (i < numDots) {
                     dot.setAttribute('visible', 'true');
                     dot.setAttribute('position', `${startX + i * spacing} 0 0`);
                     
+                    // Si c'est l'image actuelle, on met le point en vert, sinon en blanc semi-transparent
                     if (i === currentIndex) {
                         dot.setAttribute('color', '#81B29A');
                         dot.setAttribute('opacity', '1');
@@ -35,6 +37,7 @@
                         dot.setAttribute('opacity', '0.4');
                     }
                 } else {
+                    // S'il y a moins d'images que de points dispo, on cache les points en trop
                     dot.setAttribute('visible', 'false');
                 }
             }
@@ -42,38 +45,32 @@
 
         // 2. FONCTION GLOBALE POUR CHANGER DE CATÉGORIE
         window.updateCategory = function(catName) {
-            if(currentCategory === catName) return; // Ne rien faire si on clique sur la catégorie déjà active
-
             currentCategory = catName;
             currentIndex = 0; 
             
             const galleryImage = document.querySelector('#gallery-image');
             galleryImage.setAttribute('src', categories[currentCategory][currentIndex]);
 
-            // Réinitialiser les couleurs des textes
             document.querySelector('#btn-entrees').setAttribute('color', '#F6FDFF');
             document.querySelector('#btn-plats').setAttribute('color', '#F6FDFF');
             document.querySelector('#btn-desserts').setAttribute('color', '#F6FDFF');
-            
-            // Mettre en surbrillance la catégorie active
             document.querySelector('#btn-' + catName).setAttribute('color', '#81B29A');
             
             updateDots(); // Met à jour les points
         };
 
-        // 3. COMPOSANT A-FRAME POUR LES CLICS (CORRIGÉ POUR MOBILE)
+        // 3. COMPOSANT A-FRAME POUR LES CLICS
         AFRAME.registerComponent('categorie-cliquable', {
             schema: { type: 'string' },
             init: function () {
-                // On utilise 'touchstart' : la détection est immédiate au toucher du doigt, impossible de la rater !
-                this.el.addEventListener('touchstart', () => { window.updateCategory(this.data); });
-                // On garde mousedown/click pour que ça marche aussi sur ordinateur avec la souris
                 this.el.addEventListener('mousedown', () => { window.updateCategory(this.data); });
+                this.el.addEventListener('click', () => { window.updateCategory(this.data); });
             }
         });
 
-        // 4. LOGIQUE DU SWIPE
+        // 4. LOGIQUE DU SWIPE ET INITIALISATION
         document.addEventListener("DOMContentLoaded", function() {
+            // Initialisation des points au lancement de la page
             updateDots();
 
             let touchstartX = 0;
@@ -85,22 +82,18 @@
                 const photos = categories[currentCategory]; 
 
                 if (diff < -swipeThreshold) {
-                    // Swipe gauche
                     currentIndex = (currentIndex + 1) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
-                    updateDots(); 
+                    updateDots(); // Met à jour les points après un swipe
                 } 
                 else if (diff > swipeThreshold) {
-                    // Swipe droite
                     currentIndex = (currentIndex - 1 + photos.length) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
-                    updateDots(); 
+                    updateDots(); // Met à jour les points après un swipe
                 }
             }
 
-            window.addEventListener('touchstart', e => { 
-                touchstartX = e.changedTouches[0].screenX; 
-            });
+            window.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; });
             window.addEventListener('touchend', e => {
                 touchendX = e.changedTouches[0].screenX;
                 handleSwipe();
@@ -127,21 +120,18 @@
 
         <a-entity mindar-image-target="targetIndex: 0" id="affiche">
             
-            <!-- LES BOUTONS MENUS -->
-            <!-- J'ai mis Z à 0.05 (pour qu'ils soient au-dessus) et ajouté un fond noir semi-transparent (opacity: 0.3) -->
-            <a-text id="btn-entrees" class="clickable" categorie-cliquable="entrees" value="Entrees" align="left" position="-0.6 0.9 0.05" scale="0.6 0.6 0.6" color="#F6FDFF" 
-                    geometry="primitive: plane; width: 1.5; height: 0.4" material="color: #000000; opacity: 0.3; transparent: true"></a-text>
-            
-            <a-text id="btn-plats" class="clickable" categorie-cliquable="plats" value="Plats" align="left" position="-0.6 0.7 0.05" scale="0.6 0.6 0.6" color="#81B29A" 
-                    geometry="primitive: plane; width: 1.5; height: 0.4" material="color: #000000; opacity: 0.3; transparent: true"></a-text>
-            
-            <a-text id="btn-desserts" class="clickable" categorie-cliquable="desserts" value="Desserts" align="left" position="-0.6 0.5 0.05" scale="0.6 0.6 0.6" color="#F6FDFF" 
-                    geometry="primitive: plane; width: 1.5; height: 0.4" material="color: #000000; opacity: 0.3; transparent: true"></a-text>
+            <!-- LES TEXTES (MENUS) -->
+            <a-text id="btn-entrees" class="clickable" categorie-cliquable="entrees" value="Entrees" align="left" position="-0.6 0.9 0" scale="0.6 0.6 0.6" color="#F6FDFF" 
+                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
+            <a-text id="btn-plats" class="clickable" categorie-cliquable="plats" value="Plats" align="left" position="-0.6 0.7 0" scale="0.6 0.6 0.6" color="#81B29A" 
+                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
+            <a-text id="btn-desserts" class="clickable" categorie-cliquable="desserts" value="Desserts" align="left" position="-0.6 0.5 0" scale="0.6 0.6 0.6" color="#F6FDFF" 
+                    geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
 
             <!-- L'IMAGE PRINCIPALE -->
             <a-plane id="gallery-image" src="#plat1" position="0 -0.3 0" width="1" height="1" scale="0.8 0.8 0.8" rotation="0 0 0"></a-plane>
             
-            <!-- LES POINTS DE PAGINATION -->
+            <!-- LES POINTS DE PAGINATION (Placés en dessous de l'image, en Y: -0.8) -->
             <a-entity id="dots-container" position="0 -0.8 0">
                 <a-circle id="dot-0" radius="0.025" visible="false"></a-circle>
                 <a-circle id="dot-1" radius="0.025" visible="false"></a-circle>
@@ -152,7 +142,6 @@
 
         </a-entity>
 
-        <!-- LA CAMÉRA (INDISPENSABLE POUR LES CLICS) -->
         <a-camera cursor="fuse: false; rayOrigin: mouse;" raycaster="objects: .clickable" position="0 0 0" look-controls="enabled: false"></a-camera>
     </a-scene>
 </body>
