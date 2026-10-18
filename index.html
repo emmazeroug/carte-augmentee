@@ -12,11 +12,11 @@
             desserts:['#dessert1', '#dessert2']
         };
 
-        // NOUVEAU : BASE DE DONNÉES DES NOMS (Évite les accents comme "é" ou "à")
+        // 2. BASE DE DONNÉES DES NOMS (Modifiée selon ta demande)
         const dishNames = {
-            entrees: ['Nom de l entree 1', 'Nom de l entree 2'],
-            plats:   ['Nom du plat 1', 'Nom du plat 2', 'Nom du plat 3'],
-            desserts:['Nom du dessert 1', 'Nom du dessert 2']
+            entrees: ['Entree 1', 'Entree 2'],
+            plats:   ['Plat 1', 'Plat 2', 'Plat 3'],
+            desserts:['Dessert 1', 'Dessert 2']
         };
 
         let currentCategory = 'plats';
@@ -58,7 +58,7 @@
             const galleryImage = document.querySelector('#gallery-image');
             galleryImage.setAttribute('src', categories[currentCategory][currentIndex]);
 
-            // NOUVEAU : Mise à jour du texte avec le nom du plat
+            // Mise à jour du texte avec le nom du plat
             document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
 
             document.querySelector('#btn-entrees').setAttribute('color', '#F6FDFF');
@@ -95,7 +95,7 @@
                     currentIndex = (currentIndex + 1) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
                     
-                    // NOUVEAU : Mise à jour du texte lors du swipe gauche
+                    // Mise à jour du texte lors du swipe gauche
                     document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
                     
                     updateDots(); // Met à jour les points après un swipe
@@ -104,7 +104,7 @@
                     currentIndex = (currentIndex - 1 + photos.length) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
                     
-                    // NOUVEAU : Mise à jour du texte lors du swipe droite
+                    // Mise à jour du texte lors du swipe droite
                     document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
                     
                     updateDots(); // Met à jour les points après un swipe
@@ -153,8 +153,8 @@
             <!-- L'IMAGE PRINCIPALE -->
             <a-plane id="gallery-image" src="#plat1" position="0 -0.3 0" width="1" height="1" scale="0.8 0.8 0.8" rotation="0 0 0"></a-plane>
             
-            <!-- NOUVEAU : LE NOM DU PLAT -->
-            <a-text id="dish-name" value="Nom du plat 1" align="center" position="0 -0.75 0" scale="0.5 0.5 0.5" color="#F6FDFF"></a-text>
+            <!-- LE NOM DU PLAT (Texte par défaut changé en "Plat 1") -->
+            <a-text id="dish-name" value="Plat 1" align="center" position="0 -0.75 0" scale="0.5 0.5 0.5" color="#F6FDFF"></a-text>
 
             <!-- LES POINTS DE PAGINATION (Descendus à Y: -0.9 pour laisser la place au texte) -->
             <a-entity id="dots-container" position="0 -0.9 0">
