@@ -12,6 +12,13 @@
             desserts:['#dessert1', '#dessert2']
         };
 
+        // NOUVEAU : BASE DE DONNÉES DES NOMS (Évite les accents comme "é" ou "à")
+        const dishNames = {
+            entrees: ['Nom de l entree 1', 'Nom de l entree 2'],
+            plats:   ['Nom du plat 1', 'Nom du plat 2', 'Nom du plat 3'],
+            desserts:['Nom du dessert 1', 'Nom du dessert 2']
+        };
+
         let currentCategory = 'plats';
         let currentIndex = 0; 
 
@@ -51,6 +58,9 @@
             const galleryImage = document.querySelector('#gallery-image');
             galleryImage.setAttribute('src', categories[currentCategory][currentIndex]);
 
+            // NOUVEAU : Mise à jour du texte avec le nom du plat
+            document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
+
             document.querySelector('#btn-entrees').setAttribute('color', '#F6FDFF');
             document.querySelector('#btn-plats').setAttribute('color', '#F6FDFF');
             document.querySelector('#btn-desserts').setAttribute('color', '#F6FDFF');
@@ -84,11 +94,19 @@
                 if (diff < -swipeThreshold) {
                     currentIndex = (currentIndex + 1) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
+                    
+                    // NOUVEAU : Mise à jour du texte lors du swipe gauche
+                    document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
+                    
                     updateDots(); // Met à jour les points après un swipe
                 } 
                 else if (diff > swipeThreshold) {
                     currentIndex = (currentIndex - 1 + photos.length) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
+                    
+                    // NOUVEAU : Mise à jour du texte lors du swipe droite
+                    document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
+                    
                     updateDots(); // Met à jour les points après un swipe
                 }
             }
@@ -111,9 +129,11 @@
         <a-assets>
             <img id="entree1" src="./entree1.jpg" />
             <img id="entree2" src="./entree2.jpg" />
+            
             <img id="plat1" src="./plat1.jpg" />
             <img id="plat2" src="./plat2.jpg" />
             <img id="plat3" src="./plat3.jpg" />
+            
             <img id="dessert1" src="./dessert1.jpg" />
             <img id="dessert2" src="./dessert2.jpg" />
         </a-assets>
@@ -123,16 +143,21 @@
             <!-- LES TEXTES (MENUS) -->
             <a-text id="btn-entrees" class="clickable" categorie-cliquable="entrees" value="Entrees" align="left" position="-0.6 0.9 0" scale="0.6 0.6 0.6" color="#F6FDFF" 
                     geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
+            
             <a-text id="btn-plats" class="clickable" categorie-cliquable="plats" value="Plats" align="left" position="-0.6 0.7 0" scale="0.6 0.6 0.6" color="#81B29A" 
                     geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
+            
             <a-text id="btn-desserts" class="clickable" categorie-cliquable="desserts" value="Desserts" align="left" position="-0.6 0.5 0" scale="0.6 0.6 0.6" color="#F6FDFF" 
                     geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
 
             <!-- L'IMAGE PRINCIPALE -->
             <a-plane id="gallery-image" src="#plat1" position="0 -0.3 0" width="1" height="1" scale="0.8 0.8 0.8" rotation="0 0 0"></a-plane>
             
-            <!-- LES POINTS DE PAGINATION (Placés en dessous de l'image, en Y: -0.8) -->
-            <a-entity id="dots-container" position="0 -0.8 0">
+            <!-- NOUVEAU : LE NOM DU PLAT -->
+            <a-text id="dish-name" value="Nom du plat 1" align="center" position="0 -0.75 0" scale="0.5 0.5 0.5" color="#F6FDFF"></a-text>
+
+            <!-- LES POINTS DE PAGINATION (Descendus à Y: -0.9 pour laisser la place au texte) -->
+            <a-entity id="dots-container" position="0 -0.9 0">
                 <a-circle id="dot-0" radius="0.025" visible="false"></a-circle>
                 <a-circle id="dot-1" radius="0.025" visible="false"></a-circle>
                 <a-circle id="dot-2" radius="0.025" visible="false"></a-circle>
@@ -142,6 +167,7 @@
 
         </a-entity>
 
+        <!-- LA CAMÉRA -->
         <a-camera cursor="fuse: false; rayOrigin: mouse;" raycaster="objects: .clickable" position="0 0 0" look-controls="enabled: false"></a-camera>
     </a-scene>
 </body>
