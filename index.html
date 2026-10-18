@@ -5,14 +5,14 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <script>
-        // 1. BASE DE DONNÉES DES IMAGES PAR CATÉGORIE
+        
         const categories = {
             entrees: ['#entree1', '#entree2'],
             plats:   ['#plat1', '#plat2', '#plat3'],
             desserts:['#dessert1', '#dessert2']
         };
 
-        // 2. BASE DE DONNÉES DES NOMS (Modifiée selon ta demande)
+        
         const dishNames = {
             entrees: ['Entree 1', 'Entree 2'],
             plats:   ['Plat 1', 'Plat 2', 'Plat 3'],
@@ -22,20 +22,20 @@
         let currentCategory = 'plats';
         let currentIndex = 0; 
 
-        // FONCTION POUR METTRE À JOUR LES POINTS
+        
         function updateDots() {
             const numDots = categories[currentCategory].length;
-            const spacing = 0.15; // Espace entre chaque point
-            const startX = -(numDots - 1) * spacing / 2; // Calcul pour centrer les points
+            const spacing = 0.15; 
+            const startX = -(numDots - 1) * spacing / 2; 
 
-            // On boucle jusqu'à 5 (limite max de points pré-créés en HTML)
+            
             for (let i = 0; i < 5; i++) {
                 const dot = document.querySelector('#dot-' + i);
                 if (i < numDots) {
                     dot.setAttribute('visible', 'true');
                     dot.setAttribute('position', `${startX + i * spacing} 0 0`);
                     
-                    // Si c'est l'image actuelle, on met le point en vert, sinon en blanc semi-transparent
+                    
                     if (i === currentIndex) {
                         dot.setAttribute('color', '#81B29A');
                         dot.setAttribute('opacity', '1');
@@ -44,13 +44,13 @@
                         dot.setAttribute('opacity', '0.4');
                     }
                 } else {
-                    // S'il y a moins d'images que de points dispo, on cache les points en trop
+                   
                     dot.setAttribute('visible', 'false');
                 }
             }
         }
 
-        // 2. FONCTION GLOBALE POUR CHANGER DE CATÉGORIE
+       
         window.updateCategory = function(catName) {
             currentCategory = catName;
             currentIndex = 0; 
@@ -58,7 +58,7 @@
             const galleryImage = document.querySelector('#gallery-image');
             galleryImage.setAttribute('src', categories[currentCategory][currentIndex]);
 
-            // Mise à jour du texte avec le nom du plat
+            
             document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
 
             document.querySelector('#btn-entrees').setAttribute('color', '#F6FDFF');
@@ -66,10 +66,10 @@
             document.querySelector('#btn-desserts').setAttribute('color', '#F6FDFF');
             document.querySelector('#btn-' + catName).setAttribute('color', '#81B29A');
             
-            updateDots(); // Met à jour les points
+            updateDots();
         };
 
-        // 3. COMPOSANT A-FRAME POUR LES CLICS
+       
         AFRAME.registerComponent('categorie-cliquable', {
             schema: { type: 'string' },
             init: function () {
@@ -78,9 +78,9 @@
             }
         });
 
-        // 4. LOGIQUE DU SWIPE ET INITIALISATION
+        
         document.addEventListener("DOMContentLoaded", function() {
-            // Initialisation des points au lancement de la page
+           
             updateDots();
 
             let touchstartX = 0;
@@ -95,19 +95,19 @@
                     currentIndex = (currentIndex + 1) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
                     
-                    // Mise à jour du texte lors du swipe gauche
+                   
                     document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
                     
-                    updateDots(); // Met à jour les points après un swipe
+                    updateDots(); 
                 } 
                 else if (diff > swipeThreshold) {
                     currentIndex = (currentIndex - 1 + photos.length) % photos.length; 
                     document.querySelector('#gallery-image').setAttribute('src', photos[currentIndex]);
                     
-                    // Mise à jour du texte lors du swipe droite
+                    
                     document.querySelector('#dish-name').setAttribute('value', dishNames[currentCategory][currentIndex]);
                     
-                    updateDots(); // Met à jour les points après un swipe
+                    updateDots(); 
                 }
             }
 
@@ -140,7 +140,7 @@
 
         <a-entity mindar-image-target="targetIndex: 0" id="affiche">
             
-            <!-- LES TEXTES (MENUS) -->
+            
             <a-text id="btn-entrees" class="clickable" categorie-cliquable="entrees" value="Entrees" align="left" position="-0.6 0.9 0" scale="0.6 0.6 0.6" color="#F6FDFF" 
                     geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
             
@@ -150,13 +150,13 @@
             <a-text id="btn-desserts" class="clickable" categorie-cliquable="desserts" value="Desserts" align="left" position="-0.6 0.5 0" scale="0.6 0.6 0.6" color="#F6FDFF" 
                     geometry="primitive: plane; width: 1.5; height: 0.4" material="opacity: 0.01; transparent: true"></a-text>
 
-            <!-- L'IMAGE PRINCIPALE -->
+            
             <a-plane id="gallery-image" src="#plat1" position="0 -0.3 0" width="1" height="1" scale="0.8 0.8 0.8" rotation="0 0 0"></a-plane>
             
-            <!-- LE NOM DU PLAT (Texte par défaut changé en "Plat 1") -->
+            
             <a-text id="dish-name" value="Plat 1" align="center" position="0 -0.75 0" scale="0.5 0.5 0.5" color="#F6FDFF"></a-text>
 
-            <!-- LES POINTS DE PAGINATION (Descendus à Y: -0.9 pour laisser la place au texte) -->
+            
             <a-entity id="dots-container" position="0 -0.9 0">
                 <a-circle id="dot-0" radius="0.025" visible="false"></a-circle>
                 <a-circle id="dot-1" radius="0.025" visible="false"></a-circle>
@@ -167,7 +167,7 @@
 
         </a-entity>
 
-        <!-- LA CAMÉRA -->
+        
         <a-camera cursor="fuse: false; rayOrigin: mouse;" raycaster="objects: .clickable" position="0 0 0" look-controls="enabled: false"></a-camera>
     </a-scene>
 </body>
